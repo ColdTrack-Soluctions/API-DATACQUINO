@@ -8,29 +8,51 @@ const mysql = require('mysql2'); // Módulo para conectar ao MySQL
 // não altere!
 const SERIAL_BAUD_RATE = 9600;
 const SERVIDOR_PORTA = 3300;
-let teste = 0;
-let limite = false;
+
+// VARIAVEL DO IDSENSOR QUE SEMPRE VAI SER 1
+const idsensor = 1
+// VARIAVEL DO ID DO MEU INSERT (OU DOS MEUS DADOS)
+let idmetrica = 1
+
+// variavel da quantidade de aberturas
+let qtd_abertura = 0;
+//variavel que faz a lógica da contagem de aberturas
+let controle = false;
+
+// variavel que permite o INSERT no banco
 let HABILITAR_OPERACAO_INSERIR = 0;
 
-
+//VARIAVEL QUE CONTA OS SEGUNDOS
 var segundo = 0
+//VARIAVEL QUE DEFINE O TEMPO ENTRE OS INSERTS (EM SEGUNDOS)
+var tempo_insert = 15
+
+//VARIAVEL QUE EXIBE O TEMPO RESTANTE
+var tempo_restante = tempo_insert
+
+
+        
 function segundo2() {
     segundo ++
-    if (segundo >= 30){
+    tempo_restante--
+    if (segundo >= tempo_insert){
         HABILITAR_OPERACAO_INSERIR = 1
         segundo = 0
         console.log('Realizei o insert no banco!')
+    tempo_restante = tempo_insert
+
     } else {
         HABILITAR_OPERACAO_INSERIR = 0
-        console.log('ainda nao se passaram 30 segundos')
-        console.log('Quantas vezes eu abri a porta:')
+        console.log('Segundos até o INSERT:', tempo_restante)
+        console.log(' ')
+
+        console.log('Quantas vezes a porta foi aberta:', qtd_abertura)
+        console.log(' ')
+
+
     }
 }
 setInterval(segundo2, 1000);
-
-// Habilita ou desabilita a inserção de dados no banco de dados
-// false -> nao insere
-// true -> insere
 
 // Função para comunicação serial
 const serial = async (
@@ -45,12 +67,10 @@ const serial = async (
     // Conexão com o banco de dados MySQL
     poolBancoDados = mysql.createPool(
         {
-            // altere!
-            // Credenciais do banco de dados
-            host: 'localhost', // usar o ip do meu notebook  
+            host: 'localhost', 
             user: 'root',
             password: '281004',
-            database: 'testearduino',
+            database: 'bd_coldtrack',
             port: 3306
         }
     ).promise();
@@ -84,15 +104,11 @@ const serial = async (
         const lm35Temperatura = parseFloat(valores[0]);
         const luminosidade = parseFloat(valores[3]);
         const chave = parseInt(valores[1]);
-        if (chave == 1 && limite){
 
-            teste += chave;
-            limite = false;
-        } 
-        if(chave == 0 && !limite) {
-            limite = true
-        }
-        console.log(teste)
+
+    
+
+        
 
 
         // Armazena os valores dos sensores nos arrays correspondentes
@@ -106,24 +122,47 @@ const serial = async (
         // await poolBancoDados.execute(
         // )
 
+        console.log('Temperatura interna do refrigerador:', lm35Temperatura)
+        console.log(' ')
+        console.log(' ')
+
+        //LÓGICA QUE FAZ A SOMA DA ABERTURA DAS PORTAS
+        if (chave == 1 && controle){
+        
+            //SE A CHAVE É 1 E A VARIAVEL DE CONTROLE É TRUE, EU ABRI A PORTA E VOU SOMAR NA QTD_ABERTURA
+            qtd_abertura += chave;
+
+            //EU DEFINO A VARIAVEL DE CONTROLE COMO FALSE ATE EU FECHAR A PORTA
+            controle = false;
+        } 
+        //SE A CHAVE É 0, A PORTA ESTA FECHADA E EU POSSO INSERIR DE NOVO, LOGO A VARIAVEL DE CONTROLE VIRA TRUE
+        if(chave == 0 && !controle) {
+            controle = true
+        }
+        
 
         if (HABILITAR_OPERACAO_INSERIR == 1) {
-            // altere!
-            // Este insert irá inserir os dados na tabela "medida"
             await poolBancoDados.execute(
-                
-                'INSERT INTO medida (lm35_temperatura, chave) VALUES (?, ?)',
-                [lm35Temperatura, teste]
+//REALIZO O MEU INSERT                
+                'INSERT INTO dadosCaptados (idDadosCaptados, fkSensor, temperatura, qtdAbertura) VALUES (?,?,?,?)',
+                [idmetrica, idsensor, lm35Temperatura, qtd_abertura]
     
             
 
             );
-            teste = 0
+
+            //APOS O MEU INSERT EU AUMENTO O ID DA METRICA EM UM (AQUI É O AUTO_INCREMENT SÓ QUE FEITO NA API)
+            idmetrica++
+
+            //RESETO A VARIAVEL QUE EXIBE A QUANTIDADE DE ABERTURAS, AFINAL EU JA INSERI
+            qtd_abertura = 0
 
         
         }
         
     });
+
+  
 
     // Evento para lidar com erros na comunicação serial
     arduino.on('error', (mensagem) => {
