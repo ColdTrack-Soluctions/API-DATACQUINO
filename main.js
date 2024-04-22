@@ -56,9 +56,6 @@ setInterval(segundo2, 1000);
 
 // Função para comunicação serial
 const serial = async (
-    valoresDht11Umidade,
-    valoresDht11Temperatura,
-    valoresLuminosidade,
     valoresLm35Temperatura,
     valoresChave
 ) => {
@@ -99,10 +96,7 @@ const serial = async (
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
 
         const valores = data.split(';');
-        const dht11Umidade = parseFloat(valores[2]);
-        const dht11Temperatura = parseFloat(valores[4]);
         const lm35Temperatura = parseFloat(valores[0]);
-        const luminosidade = parseFloat(valores[3]);
         const chave = parseInt(valores[1]);
 
 
@@ -112,9 +106,6 @@ const serial = async (
 
 
         // Armazena os valores dos sensores nos arrays correspondentes
-        valoresDht11Umidade.push(dht11Umidade);
-        valoresDht11Temperatura.push(dht11Temperatura);
-        valoresLuminosidade.push(luminosidade);
         valoresLm35Temperatura.push(lm35Temperatura);
         valoresChave.push(chave);
 
@@ -174,9 +165,6 @@ const serial = async (
 // não altere!
 // Função para criar e configurar o servidor web
 const servidor = (
-    valoresDht11Umidade,
-    valoresDht11Temperatura,
-    valoresLuminosidade,
     valoresLm35Temperatura,
     valoresChave
 ) => {
@@ -195,15 +183,7 @@ const servidor = (
     });
 
     // Define os endpoints da API para cada tipo de sensor
-    app.get('/sensores/dht11/umidade', (_, response) => {
-        return response.json(valoresDht11Umidade);
-    });
-    app.get('/sensores/dht11/temperatura', (_, response) => {
-        return response.json(valoresDht11Temperatura);
-    });
-    app.get('/sensores/luminosidade', (_, response) => {
-        return response.json(valoresLuminosidade);
-    });
+
     app.get('/sensores/lm35/temperatura', (_, response) => {
         return response.json(valoresLm35Temperatura);
     });
@@ -215,26 +195,17 @@ const servidor = (
 // Função principal assíncrona para iniciar a comunicação serial e o servidor web
 (async () => {
     // Arrays para armazenar os valores dos sensores
-    const valoresDht11Umidade = [];
-    const valoresDht11Temperatura = [];
-    const valoresLuminosidade = [];
     const valoresLm35Temperatura = [];
     const valoresChave = [];
 
     // Inicia a comunicação serial
     await serial(
-        valoresDht11Umidade,
-        valoresDht11Temperatura,
-        valoresLuminosidade,
         valoresLm35Temperatura,
         valoresChave
     );
 
     // Inicia o servidor web
     servidor(
-        valoresDht11Umidade,
-        valoresDht11Temperatura,
-        valoresLuminosidade,
         valoresLm35Temperatura,
         valoresChave
     );

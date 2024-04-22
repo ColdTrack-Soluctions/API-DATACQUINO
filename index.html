@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Line Chart</title>
+    <title>Gráficos API</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
     <script src="http://www.chartjs.org/dist/2.7.1/Chart.js"></script>
     <script src="http://www.chartjs.org/samples/latest/utils.js"></script>
@@ -12,155 +12,68 @@
             -webkit-user-select: none;
             -ms-user-select: none;
             user-select: none;
+            
+        }
+
+        body {
+            background: rgb(51, 159, 217);
+    background: linear-gradient(267deg, rgba(51, 159, 217, 1) 0%, rgba(4, 1, 137, 1) 50%, rgba(2, 1, 59, 1) 84%);
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            height:  82vh;
+            width: 80%;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 35px;
+        }
+        .box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            border-radius: 10px;
+            background: rgba(245, 242, 248, 0.65);
+            width: 50%;
+            height: 70%;
         }
     </style>
 </head>
 
 <body>
-    <div>
-        <h1>Sensor DHT 11 - Umidade</h1>
-        <section style="width:50%">
-            <canvas id="dht11Umidade"></canvas>
-        </section>
-        <h1>Sensor DHT 11 - Temperatura</h1>
-        <section style="width: 50%;">
-            <canvas id="dht11Temperatura"></canvas>
-        </section>
-        <h1>Sensor Luminosidade</h1>
-        <section style="width: 50%;">
-            <canvas id="luminosidade"></canvas>
-        </section>
-        <h1>Sensor LM 35 - Temperatura</h1>
-        <section style="width: 50%;">
-            <canvas id="lm35Temperatura"></canvas>
-        </section>
-        <h1>Sensor Chave</h1>
-        <section style="width: 50%;">
+<div class="container">
+
+
+
+    <div class="box">
+        <h1>Temperatura Interna do Refrigerador</h1>
+        <br>
+        <br>
+        <br>
+        <br>
+
+            <section style="width: 100%;">
+                <canvas id="lm35Temperatura"></canvas>
+            </section>
+        </div>
+
+    <div class="box">
+        
+        <h1>Estado da Porta</h1>
+        <br>
+        <br>
+        <br>
+        <br>
+        <section style="width: 100%;">
             <canvas id="chave"></canvas>
         </section>
     </div>
 
     <script>
-        /* -- dht11Umidade -- */
-        var contextoDht11Umidade = document.getElementById('dht11Umidade').getContext('2d');
-        contextoDht11Umidade.canvas.width = 1000;
-        contextoDht11Umidade.canvas.height = 300;
-        var dht11Umidade = new Chart(
-            contextoDht11Umidade,
-            {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Umidade',
-                        type: 'line',
-                        borderColor: ['#45b3e7'],
-                        backgroundColor: ['#89cff0']
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            distribution: 'series',
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Umidade'
-                            },
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                    animation:  {
-                        duration: 5
-                    }
-                }
-            }
-        );
-        /* -- dht11Temperatura -- */
-        var contextoDht11Temperatura = document.getElementById('dht11Temperatura').getContext('2d');
-        contextoDht11Temperatura.canvas.width = 1000;
-        contextoDht11Temperatura.canvas.height = 300;
-        var dht11Temperatura = new Chart(
-            contextoDht11Temperatura,
-            {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: "Temperatura",
-                        type: 'line',
-                        borderColor: ['#ff3232'],
-                        backgroundColor: ['#ff7f7f']
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            distribution: 'series',
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Luminosidade'
-                            },
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                    animation: {
-                        duration: 0
-                    }
-                }
-            }
-        );
-        /* -- luminosidade -- */
-        var contextoLuminosidade = document.getElementById('luminosidade').getContext('2d');
-        contextoLuminosidade.canvas.width = 1000;
-        contextoLuminosidade.canvas.height = 300;
-        var luminosidade = new Chart(
-            contextoLuminosidade,
-            {
-                type: 'line',
-                data: {
-                    datasets: [{
-                        label: 'Luminosidade',
-                        type: 'line',
-                        borderColor: ['#ffd902'],
-                        backgroundColor: ['#ffe135']
-                    }]
-                },
-                options: {
-                    scales: {
-                        xAxes: [{
-                            distribution: 'series',
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }],
-                        yAxes: [{
-                            scaleLabel: {
-                                display: true,
-                                labelString: 'Luminosidade'
-                            },
-                            ticks: {
-                                beginAtZero: true
-                            }
-                        }]
-                    },
-                    animation: {
-                        duration: 0
-                    }
-                }
-            }
-        );
+       
         /* -- lm35Temperatura */
         var contextoLm35Temperatura = document.getElementById('lm35Temperatura').getContext('2d');
         contextoLm35Temperatura.canvas.width = 1000;
@@ -173,7 +86,7 @@
                     datasets: [{
                         label: 'Temperatura',
                         type: 'line',
-                        borderColor: ['#ffd902'],
+                        borderColor: ['blue'],
                         backgroundColor: ['transparent']
                     }]
                 },
@@ -194,6 +107,7 @@
                                 beginAtZero: true
                             }
                         }]
+                        
                     },
                     animation: {
                         duration: 0
@@ -238,7 +152,10 @@
                     animation: {
                         duration: 0
                     }
-                }
+                },
+                grid: {
+                        color: "green"
+                        }
             }
         );
 
@@ -264,6 +181,7 @@
                 if (grafico.data.labels.length == 10 && grafico.data.datasets[0].data.length == 10) {
                     grafico.data.labels.shift();
                     grafico.data.datasets[0].data.shift();
+                    
                 }
 
                 grafico.data.labels.push(tempo[endpoint]++);
@@ -273,14 +191,13 @@
         }
 
         setInterval(() => {
-            obterDados(dht11Umidade, 'dht11/umidade');
-            obterDados(dht11Temperatura, 'dht11/temperatura');
-            obterDados(luminosidade, 'luminosidade');
             obterDados(lm35Temperatura, 'lm35/temperatura');
             obterDados(chave, 'chave');
         }, 1000);
 
     </script>
+
+</div>
 </body>
 
 </html>
