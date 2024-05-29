@@ -99,8 +99,14 @@ const serial = async (
         const lm35Temperatura = parseFloat(valores[0]);
         const chave = parseInt(valores[1]);
 
-
-    
+        let v = [
+            
+            `INSERT INTO DadosAbertura (idDadoAbertura, Aberturas, fksensorbloqueio, fkporta, fkrefrigerador, fkestabelecimento, fkCliente) VALUES (${idmetrica},${qtd_abertura},${idsensor},${1},${1},${1},${1})`,
+            
+            `INSERT INTO dadosTemperatura (idDadoTemperatura, Temperatura, fkSensorTemperatura, fkRefrigerador, fkEstabelecimento, fkCliente) VALUES (${idmetrica},${lm35Temperatura},${1},${1},${1},${1})`
+            
+        ]
+        
 
         
 
@@ -133,15 +139,12 @@ const serial = async (
         
 
         if (HABILITAR_OPERACAO_INSERIR == 1) {
-            await poolBancoDados.execute(
-//REALIZO O MEU INSERT                
-                'INSERT INTO dadosCaptados (idDadosCaptados, fkSensor, temperatura, qtdAbertura) VALUES (?,?,?,?)',
-                [idmetrica, idsensor, lm35Temperatura, qtd_abertura]
-    
+           
+            for (var i = 0; i < v.length; i++){
+
+                await poolBancoDados.execute(v[i]);
+            }
             
-
-            );
-
             //APOS O MEU INSERT EU AUMENTO O ID DA METRICA EM UM (AQUI É O AUTO_INCREMENT SÓ QUE FEITO NA API)
             idmetrica++
 
