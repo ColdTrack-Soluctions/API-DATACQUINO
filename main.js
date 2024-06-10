@@ -25,7 +25,7 @@ let HABILITAR_OPERACAO_INSERIR = 0;
 //VARIAVEL QUE CONTA OS SEGUNDOS
 var segundo = 0
 //VARIAVEL QUE DEFINE O TEMPO ENTRE OS INSERTS (EM SEGUNDOS)
-var tempo_insert = 15
+var tempo_insert = 5
 
 //VARIAVEL QUE EXIBE O TEMPO RESTANTE
 var tempo_restante = tempo_insert
@@ -66,7 +66,7 @@ const serial = async (
         {
             host: 'localhost', 
             user: 'root',
-            password: '281004',
+            password: 'Vv$847200',
             database: 'bd_coldtrack',
             port: 3306
         }
@@ -94,11 +94,10 @@ const serial = async (
 
     // Processa os dados recebidos do Arduino
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
-
         const valores = data.split(';');
-        const lm35Temperatura = parseFloat(valores[0]);
+        const lm35Temperatura = Number((Math.random() * 7.8 - 1.8).toFixed(2));
         const chave = parseInt(valores[1]);
-
+        console.log(lm35Temperatura);
         let v = [
             
             `INSERT INTO DadosAbertura (idDadoAbertura, Aberturas, fksensorbloqueio, fkporta, fkrefrigerador, fkestabelecimento, fkCliente) VALUES (${idmetrica},${qtd_abertura},${idsensor},${1},${1},${1},${1})`,
@@ -130,7 +129,7 @@ const serial = async (
             qtd_abertura += chave;
 
             //EU DEFINO A VARIAVEL DE CONTROLE COMO FALSE ATE EU FECHAR A PORTA
-            controle = false;
+            controle = false; 
         } 
         //SE A CHAVE É 0, A PORTA ESTA FECHADA E EU POSSO INSERIR DE NOVO, LOGO A VARIAVEL DE CONTROLE VIRA TRUE
         if(chave == 0 && !controle) {
@@ -142,6 +141,7 @@ const serial = async (
            
             for (var i = 0; i < v.length; i++){
 
+                console.log(v[i])
                 await poolBancoDados.execute(v[i]);
             }
             
