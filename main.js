@@ -13,6 +13,8 @@ const SERVIDOR_PORTA = 3300;
 const idsensor = 1
 // VARIAVEL DO ID DO MEU INSERT (OU DOS MEUS DADOS)
 let idmetrica = 1
+let idmetricaabertura = 6
+
 
 // variavel da quantidade de aberturas
 let qtd_abertura = 0;
@@ -25,7 +27,7 @@ let HABILITAR_OPERACAO_INSERIR = 0;
 //VARIAVEL QUE CONTA OS SEGUNDOS
 var segundo = 0
 //VARIAVEL QUE DEFINE O TEMPO ENTRE OS INSERTS (EM SEGUNDOS)
-var tempo_insert = 5
+var tempo_insert = 15
 
 //VARIAVEL QUE EXIBE O TEMPO RESTANTE
 var tempo_restante = tempo_insert
@@ -64,11 +66,11 @@ const serial = async (
     // Conexão com o banco de dados MySQL
     poolBancoDados = mysql.createPool(
         {
-            host: 'localhost', 
-            user: 'root',
-            password: 'Vv$847200',
+            host: '10.18.36.200', 
+            user: 'aluno',
+            password: 'Sptech#2024',
             database: 'bd_coldtrack',
-            port: 3306
+            port: 3307
         }
     ).promise();
 
@@ -95,12 +97,12 @@ const serial = async (
     // Processa os dados recebidos do Arduino
     arduino.pipe(new serialport.ReadlineParser({ delimiter: '\r\n' })).on('data', async (data) => {
         const valores = data.split(';');
-        const lm35Temperatura = Number((Math.random() * 7.8 - 1.8).toFixed(2));
+        const lm35Temperatura = Number((Math.random() * 6 - 3).toFixed(2));
         const chave = parseInt(valores[1]);
         console.log(lm35Temperatura);
         let v = [
             
-            `INSERT INTO DadosAbertura (idDadoAbertura, Aberturas, fksensorbloqueio, fkporta, fkrefrigerador, fkestabelecimento, fkCliente) VALUES (${idmetrica},${qtd_abertura},${idsensor},${1},${1},${1},${1})`,
+            `INSERT INTO dadosAbertura (idDadoAbertura, Aberturas, fksensorbloqueio, fkporta, fkrefrigerador, fkestabelecimento, fkCliente) VALUES (${idmetricaabertura},${qtd_abertura},${idsensor},${1},${1},${1},${1})`,
             
             `INSERT INTO dadosTemperatura (idDadoTemperatura, Temperatura, fkSensorTemperatura, fkRefrigerador, fkEstabelecimento, fkCliente) VALUES (${idmetrica},${lm35Temperatura},${1},${1},${1},${1})`
             
@@ -147,6 +149,8 @@ const serial = async (
             
             //APOS O MEU INSERT EU AUMENTO O ID DA METRICA EM UM (AQUI É O AUTO_INCREMENT SÓ QUE FEITO NA API)
             idmetrica++
+            idmetricaabertura++
+
 
             //RESETO A VARIAVEL QUE EXIBE A QUANTIDADE DE ABERTURAS, AFINAL EU JA INSERI
             qtd_abertura = 0
